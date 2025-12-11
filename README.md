@@ -1,36 +1,158 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Elana Reborn - Numerology & Astrology Analysis App
+
+A modern Lithuanian numerology and astrology application that combines ancient wisdom with AI-powered analysis to provide personalized cosmic insights.
+
+## Features
+
+- 🌟 **Personal Numerology Analysis**: Calculate life path numbers, expression, soul urge, and personality numbers
+- 🔮 **Zodiac Integration**: Full zodiac sign calculations with cosmic interpretations
+- 🎁 **Gift Analysis**: Create personalized numerology reports as gifts for others
+- 🤖 **AI-Powered**: Uses Google Gemini AI for deep, personalized interpretations
+- 🎨 **Modern UI**: Beautiful cosmic-themed design with particle animations
+- 📱 **Responsive**: Works seamlessly on desktop and mobile devices
+- 🇱🇹 **Lithuanian Localized**: Fully in Lithuanian language
+
+## Tech Stack
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Styling**: Tailwind CSS with custom cosmic theme
+- **Animations**: Framer Motion, React TSParticles
+- **AI**: Google Gemini AI
+- **Icons**: Lucide React
+- **Fonts**: Inter & Playfair Display
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- Google Gemini API key
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd elana-reborn
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.local.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Configure your Gemini API key in `.env.local`:
+```env
+# Get your API key from https://makersuite.google.com/app/apikey
+GEMINI_API_KEY=your_actual_gemini_api_key_here
+GEMINI_MODEL=gemini-flash-latest
+```
 
-## Learn More
+5. Run the development server:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/analyze/       # AI analysis API endpoint
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Home page
+├── components/
+│   ├── features/          # Main feature components
+│   │   ├── CalculatorForm.tsx
+│   │   └── AnalysisResult.tsx
+│   ├── layout/            # Layout components
+│   │   └── Navbar.tsx
+│   └── ui/                # Reusable UI components
+│       ├── Input.tsx
+│       └── ParticlesBackground.tsx
+└── lib/
+    ├── numerology.ts      # Numerology calculations
+    └── utils.ts           # Utility functions
+```
 
-## Deploy on Vercel
+## Numerology Calculations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The app implements the Pythagorean numerology system with Lithuanian alphabet support:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Life Path Number**: Calculated from birth date
+- **Expression Number**: Derived from full name
+- **Soul Urge Number**: Calculated from vowels in name
+- **Personality Number**: Calculated from consonants in name
+- **Zodiac Sign**: Traditional Western astrology calculations
+
+## API Endpoints
+
+### POST /api/analyze
+
+Generates personalized numerology analysis using AI.
+
+**Request Body:**
+```json
+{
+  "name": "Vardas",
+  "surname": "Pavardė", 
+  "birthDate": "1990-05-15",
+  "gender": "male|female",
+  "type": "self|gift",
+  "giver": "Dovanotojo vardas", // optional
+  "occasion": "Proga" // optional
+}
+```
+
+## Development Commands
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
+```
+
+## Environment Variables
+
+- `GEMINI_API_KEY`: Your Google Gemini API key (required)
+- `GEMINI_MODEL`: Gemini model to use (default: gemini-flash-latest)
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Connect your repository to Vercel
+2. Add your `GEMINI_API_KEY` as an environment variable
+3. Deploy automatically
+
+### Other Platforms
+
+```bash
+npm run build
+npm run start
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For issues and questions, please open an issue on GitHub.
