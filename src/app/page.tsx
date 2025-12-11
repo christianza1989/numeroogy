@@ -44,29 +44,30 @@ export default function Home() {
             </div>
 
             {/* Headline */}
-            <h1 className="text-5xl md:text-7xl font-heading font-extrabold text-white mb-6 leading-tight animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              Atraskite Savo <br className="hidden md:block" />
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-heading font-extrabold text-white mb-4 sm:mb-6 leading-tight animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+              Atraskite Savo <br className="block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 animate-gradient-flow bg-[length:200%_auto]">
                 Kosmoso Kodą
               </span>
             </h1>
 
             {/* Description */}
-            <p className="text-lg md:text-xl text-text-medium mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              Sujungėme senovės numerologijos išmintį su moderniu AI, kad sukurtume
+            <p className="text-base sm:text-lg md:text-xl text-text-medium mb-6 sm:mb-8 lg:mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              Sujungėme senovės numerologijos išmintį su moderniu AI
+              <br className="hidden sm:block" />
               <span className="text-white font-medium"> tobulą dovaną</span> arba gilią įžvalgą Jums.
             </p>
 
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-              <button className="group relative px-8 py-4 bg-gradient-to-r from-primary-600 to-pink-600 text-white rounded-xl font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-200 flex items-center gap-2">
-                Sukurti Analizę Dabar
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+              <button className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary-600 to-pink-600 text-white rounded-xl font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-200 flex items-center gap-2 text-sm sm:text-base">
+                Sukurti Analizę
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               
-              <button className="px-8 py-4 bg-transparent border border-white/20 text-white rounded-xl font-semibold hover:bg-white/5 hover:border-purple-400/50 transition-all flex items-center gap-2">
+              <button className="px-6 sm:px-8 py-3 sm:py-4 bg-transparent border border-white/20 text-white rounded-xl font-semibold hover:bg-white/5 hover:border-purple-400/50 transition-all flex items-center gap-2 text-sm sm:text-base">
                 Sužinoti Daugiau
-                <Info className="w-5 h-5" />
+                <Info className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
@@ -79,23 +80,23 @@ export default function Home() {
         </section>
 
         {/* FEATURES SECTION */}
-        <section className="py-20 bg-dark-bg-200 relative z-10">
+        <section className="py-12 sm:py-16 lg:py-20 bg-dark-bg-200 relative z-10">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4">Kodėl verta rinktis mus?</h2>
-              <p className="text-slate-400 max-w-2xl mx-auto">Mes nejudame paviršiumi. Mūsų algoritmai sujungia tūkstantmetę išmintį su moderniausiu AI.</p>
+            <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-white mb-4">Kodėl verta rinktis mus?</h2>
+              <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto">Mes nejudame paviršiumi. Mūsų algoritmai sujungia tūkstantmetę išmintį su moderniausiu AI.</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
               {[
                 { title: "Mokslinis Tikslumas", desc: "Naudojame NASA duomenis planetų pozicijoms skaičiuoti.", icon: "🌌" },
                 { title: "Gili Psichologija", desc: "AI analizuoja ne tik 'ką', bet ir 'kodėl' – jūsų motyvus ir baimes.", icon: "🧠" },
                 { title: "Tobula Dovana", desc: "PDF knyga paruošta spausdinimui – idealu gimtadieniams.", icon: "🎁" }
               ].map((item, i) => (
-                <div key={i} className="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-purple-500/30 transition-all">
-                  <div className="text-4xl mb-4">{item.icon}</div>
-                  <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                  <p className="text-slate-400 text-sm">{item.desc}</p>
+                <div key={i} className="p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 hover:border-purple-500/30 transition-all">
+                  <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">{item.icon}</div>
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-2">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-slate-400">{item.desc}</p>
                 </div>
               ))}
             </div>

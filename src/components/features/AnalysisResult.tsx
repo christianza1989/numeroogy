@@ -73,17 +73,17 @@ export function AnalysisResult({ content, userData }: AnalysisResultProps) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-10 animate-fade-in-up">
-      <div className="bg-dark-bg-200/80 backdrop-blur-md border border-purple-500/30 rounded-3xl p-8 md:p-12 shadow-[0_0_50px_rgba(139,92,246,0.15)] relative">
+    <div className="w-full max-w-4xl mx-auto mt-8 sm:mt-10 animate-fade-in-up">
+      <div className="bg-dark-bg-200/80 backdrop-blur-md border border-purple-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 shadow-[0_0_50px_rgba(139,92,246,0.15)] relative">
         
         {/* Header */}
-        <div className="flex items-center gap-4 mb-10 pb-6 border-b border-white/10">
-          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30">
-            <span className="text-3xl">🌌</span>
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-white/10">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+            <span className="text-xl sm:text-3xl">🌌</span>
           </div>
-          <div>
-            <h2 className="text-3xl font-heading font-bold text-white">Jūsų Kosminė Analizė</h2>
-            <p className="text-purple-300">Paruošta: {report.meta.user}</p>
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-heading font-bold text-white">Jūsų Kosminė Analizė</h2>
+            <p className="text-purple-300 text-sm sm:text-base">{report.meta.user}</p>
           </div>
         </div>
 
