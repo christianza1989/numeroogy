@@ -5,7 +5,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { NumerologyReportPdf } from "../pdf/NumerologyReportPdf";
 import { useEffect, useState } from 'react';
 import { FullReport, AnalysisSection } from '../../types/analysis';
-import { LockedSection } from '../ui/LockedSection';
+// import { LockedSection } from '../ui/LockedSection'; // No longer needed
 import { PlanetaryGrid } from './PlanetaryGrid';
 
 interface AnalysisResultProps {
@@ -96,47 +96,39 @@ export function AnalysisResult({ content, userData }: AnalysisResultProps) {
           {emotionalSection && renderSection(emotionalSection)}
         </div>
 
-        {/* PAYWALL / LOCKED CONTENT */}
-        {!isUnlocked ? (
-          <LockedSection 
-            title="Karmos, Karjeros ir Ateities Prognozės" 
-            price="19.00 €" 
-            onUnlock={handlePayment} 
-          />
-        ) : (
-          <div className="mt-12 pt-12 border-t border-dashed border-purple-500/30 animate-fade-in-up">
-            <div className="mb-8 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-200 text-center text-sm">
-              ✨ Mokėjimas sėkmingas! Pilna ataskaita atrakinta.
-            </div>
-            
-            {/* Render Locked Sections */}
-            {lockedSections.filter(Boolean).map(sec => renderSection(sec))}
-
-            {/* PDF DOWNLOAD (Only visible after pay) */}
-            <div className="mt-16 pt-8 border-t border-white/10 flex flex-col items-center text-center">
-               <h3 className="text-xl font-bold text-white mb-4">Jūsų Asmeninė Knyga Paruošta</h3>
-               <p className="text-slate-400 mb-6 max-w-md">
-                 Atsisiųskite pilną, profesionaliai sumaketuotą PDF versiją spausdinimui.
-               </p>
-               {isClient ? (
-                 <PDFDownloadLink
-                   document={<NumerologyReportPdf data={report} />}
-                   fileName={`Analize_${report.meta.user.replace(/ /g, '_')}.pdf`}
-                   className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg shadow-xl shadow-purple-500/40 hover:scale-105 transition-all"
-                 >
-                   {({ loading }) => loading ? (
-                       <><Loader2 className="animate-spin" /> Generuojama...</>
-                     ) : (
-                       <><Download /> Atsisiųsti PDF Knygą</>
-                     )
-                   }
-                 </PDFDownloadLink>
-               ) : (
-                 <button disabled className="px-8 py-4 bg-white/5 rounded-xl text-white">Kraunama...</button>
-               )}
-            </div>
+        {/* ALL CONTENT - NO PAYWALL */}
+        <div className="mt-12 pt-12 border-t border-dashed border-purple-500/30">
+          <div className="mb-8 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-200 text-center text-sm">
+            ✨ Visas turinys nemokamai prieinamas! Mėgaukite pilną analizę.
           </div>
-        )}
+          
+          {/* Render All Sections */}
+          {lockedSections.filter(Boolean).map(sec => renderSection(sec))}
+
+          {/* PDF DOWNLOAD - Always Available */}
+          <div className="mt-16 pt-8 border-t border-white/10 flex flex-col items-center text-center">
+             <h3 className="text-xl font-bold text-white mb-4">Jūsų Asmeninė Knyga Paruošta</h3>
+             <p className="text-slate-400 mb-6 max-w-md">
+               Atsisiųskite pilną, profesionaliai sumaketuotą PDF versiją spausdinimui.
+             </p>
+             {isClient ? (
+               <PDFDownloadLink
+                 document={<NumerologyReportPdf data={report} />}
+                 fileName={`Analize_${report.meta.user.replace(/ /g, '_')}.pdf`}
+                 className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg shadow-xl shadow-purple-500/40 hover:scale-105 transition-all"
+               >
+                 {({ loading }) => loading ? (
+                     <><Loader2 className="animate-spin" /> Generuojama...</>
+                   ) : (
+                     <><Download /> Atsisiųsti PDF Knygą</>
+                   )
+                 }
+               </PDFDownloadLink>
+             ) : (
+               <button disabled className="px-8 py-4 bg-white/5 rounded-xl text-white">Kraunama...</button>
+             )}
+          </div>
+        </div>
 
       </div>
     </div>
