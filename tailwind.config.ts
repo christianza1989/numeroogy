@@ -12,6 +12,7 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
         heading: ["var(--font-playfair)", "serif"],
+        roboto: ["var(--font-roboto)", "sans-serif"],
       },
       colors: {
         // Cosmic Dark Backgrounds

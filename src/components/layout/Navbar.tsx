@@ -29,7 +29,7 @@ export function Navbar() {
                  <Star className="w-5 h-5 text-white relative z-10 group-hover:rotate-12 transition-transform" fill="currentColor" />
             </div>
             <span className="font-heading font-bold text-xl tracking-tight text-white group-hover:text-primary-300 transition-colors">
-              Numerology.lt
+              Likimoknyga.lt
             </span>
           </Link>
 
@@ -64,7 +64,7 @@ export function Navbar() {
           <div className="fixed right-0 top-0 h-full w-64 bg-dark-bg-300 border-l border-white/5 transform translate-x-full transition-transform duration-300">
             <div className="p-4">
               <div className="flex justify-between items-center mb-6">
-                <span className="text-xl font-bold text-white">Numerology.lt</span>
+                <span className="text-xl font-bold text-white">Likimoknyga.lt</span>
                 <button onClick={() => setMobileMenuOpen(false)} className="text-text-light p-2">
                   <X />
                 </button>

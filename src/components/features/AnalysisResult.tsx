@@ -1,12 +1,14 @@
 "use client";
 import ReactMarkdown from 'react-markdown';
-import { Sparkles, Download, Loader2 } from 'lucide-react';
+import { Sparkles, Download, Loader2, Lock, RotateCcw } from 'lucide-react'; // --- NAUJA: Pridėta RotateCcw
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { NumerologyReportPdf } from "../pdf/NumerologyReportPdf";
 import { useEffect, useState } from 'react';
 import { FullReport, AnalysisSection } from '../../types/analysis';
-// import { LockedSection } from '../ui/LockedSection'; // No longer needed
 import { PlanetaryGrid } from './PlanetaryGrid';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { toNaudininkas } from '../../lib/utils';
+import { SuccessCelebration } from '../ui/SuccessCelebration';
 
 interface AnalysisResultProps {
   content: string | FullReport;
@@ -14,39 +16,105 @@ interface AnalysisResultProps {
     name: string;
     surname: string;
     birthDate: string;
+    type?: 'self' | 'gift';
+    occasion?: string;
+    gender?: string;
   }
 }
 
 export function AnalysisResult({ content, userData }: AnalysisResultProps) {
   const [isClient, setIsClient] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false); // New State
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // 1. PASIIMAME KAINĄ IŠ .ENV
+  const PRICE = process.env.NEXT_PUBLIC_STRIPE_PRICE_EUR || "9.99";
+
+  const safeUserData = userData || (content as FullReport).userData || {
+    name: '',
+    surname: '',
+    birthDate: '',
+    type: 'self' as const,
+    occasion: '',
+    gender: 'female'
+  };
+  
+  const isGift = safeUserData?.type === 'gift';
+  const gender = safeUserData?.gender || 'female';
+  
+  const recipientName = isGift && safeUserData?.name 
+    ? toNaudininkas(safeUserData.name, gender) 
+    : (safeUserData?.name || '');
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => setIsClient(true), 0);
-    return () => clearTimeout(timeoutId);
-  }, []);
+    setIsClient(true);
+    
+    const paymentStatus = searchParams.get('payment_status');
+    
+    if (paymentStatus === 'success') {
+      setIsUnlocked(true);
+      router.replace('/', { scroll: false });
+      
+      setTimeout(() => {
+        setShowSuccessPopup(true);
+      }, 500);
+    }
+  }, [searchParams, router]);
 
-  // Helper to simulate payment
-  const handlePayment = () => {
-    // In real app: Redirect to Stripe
-    alert("Imituojamas apmokėjimas... Sėkmė!");
-    setIsUnlocked(true);
+  useEffect(() => {
+    if (content && typeof content === 'object') {
+      localStorage.setItem('last_generated_report', JSON.stringify(content));
+    }
+  }, [content]);
+
+  // --- NAUJA: Funkcija išvalyti duomenis ir pradėti iš naujo ---
+  const handleReset = () => {
+    // 1. Išvalome išsaugotą ataskaitą
+    localStorage.removeItem('last_generated_report');
+    
+    // 2. Perkrauname puslapį, kad "CalculatorForm" užsikrautų tuščia
+    window.location.reload();
+  };
+  // -------------------------------------------------------------
+
+  const handlePayment = async () => {
+    setIsLoadingPayment(true);
+    try {
+      localStorage.setItem('last_generated_report', JSON.stringify(content));
+
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportId: (content as FullReport).meta?.generatedAt }),
+      });
+
+      const data = await res.json();
+      
+      if (data.url) {
+        window.location.href = data.url; 
+      } else {
+        alert("Įvyko klaida ruošiant apmokėjimą.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Nepavyko susisiekti su mokėjimo sistema.");
+    } finally {
+      setIsLoadingPayment(false);
+    }
   };
 
   const isFullReport = (c: string | FullReport): c is FullReport => Boolean(c && typeof c === 'object' && 'sections' in c);
-
-  if (!isFullReport(content)) return <div>Legacy content error</div>;
+  if (!isFullReport(content)) return null; 
 
   const report = content as FullReport;
   
-  // Separate Free vs Paid sections
-  // Assuming API returns sections in order: Identity (0), Emotional (1), Karma (2), Career (3), Future (4)
-  const freeSection = report.sections[0]; 
-  const emotionalSection = report.sections[1];
-  // Sections to lock
-  const lockedSections = report.sections.slice(2); 
+  const freeSections = report.sections?.slice(0, 2) || []; 
+  const lockedSections = report.sections?.slice(2) || []; 
 
-  // Helper to render a section
   const renderSection = (section: AnalysisSection) => {
     if (!section) return null;
     
@@ -59,7 +127,7 @@ export function AnalysisResult({ content, userData }: AnalysisResultProps) {
           {section.blocks.map((block, idx) => (
             <div key={idx} className="bg-white/5 rounded-2xl p-6 border border-white/5 hover:border-purple-500/30 transition-colors">
               <h4 className="text-lg font-bold text-purple-200 mb-3 flex items-center gap-2">
-                <span className="text-xl">{block.icon === 'sun' ? '☀️' : block.icon === 'moon' ? '🌙' : '✨'}</span>
+                <span className="text-xl">{block.icon === 'sun' ? '☀️' : block.icon === 'moon' ? '🌙' : block.icon === 'star' ? '⭐' : block.icon === 'heart' ? '❤️' : block.icon === 'fire' ? '🔥' : block.icon === 'zap' ? '⚡' : block.icon === 'feather' ? '🪶' : block.icon === 'gift' ? '🎁' : '✨'}</span>
                 {block.title}
               </h4>
               <div className="prose prose-invert prose-p:text-slate-300 max-w-none text-sm leading-relaxed">
@@ -73,7 +141,7 @@ export function AnalysisResult({ content, userData }: AnalysisResultProps) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-8 sm:mt-10 animate-fade-in-up">
+    <div className="w-full max-w-4xl mx-auto mt-8 sm:mt-10 animate-fade-in-up pb-20">
       <div className="bg-dark-bg-200/80 backdrop-blur-md border border-purple-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 shadow-[0_0_50px_rgba(139,92,246,0.15)] relative">
         
         {/* Header */}
@@ -90,47 +158,118 @@ export function AnalysisResult({ content, userData }: AnalysisResultProps) {
         {/* PLANETARY GRID */}
         {report.planetaryData && <PlanetaryGrid data={report.planetaryData} />}
 
-        {/* FREE CONTENT */}
+        {/* NEMOKAMAS TURINYS */}
         <div className="space-y-12">
-          {freeSection && renderSection(freeSection)}
-          {emotionalSection && renderSection(emotionalSection)}
+          {freeSections.map(sec => renderSection(sec))}
         </div>
 
-        {/* ALL CONTENT - NO PAYWALL */}
-        <div className="mt-12 pt-12 border-t border-dashed border-purple-500/30">
-          <div className="mb-8 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-200 text-center text-sm">
-            ✨ Visas turinys nemokamai prieinamas! Mėgaukite pilną analizę.
-          </div>
-          
-          {/* Render All Sections */}
-          {lockedSections.filter(Boolean).map(sec => renderSection(sec))}
+        {/* MOKAMAS TURINYS */}
+        {!isUnlocked ? (
+          <div className="mt-8 relative">
+             <div className="opacity-30 filter blur-md select-none h-64 overflow-hidden pointer-events-none">
+                {lockedSections[0] && renderSection(lockedSections[0])}
+             </div>
 
-          {/* PDF DOWNLOAD - Always Available */}
-          <div className="mt-16 pt-8 border-t border-white/10 flex flex-col items-center text-center">
-             <h3 className="text-xl font-bold text-white mb-4">Jūsų Asmeninė Knyga Paruošta</h3>
-             <p className="text-slate-400 mb-6 max-w-md">
-               Atsisiųskite pilną, profesionaliai sumaketuotą PDF versiją spausdinimui.
-             </p>
-             {isClient ? (
-               <PDFDownloadLink
-                 document={<NumerologyReportPdf data={report} />}
-                 fileName={`Analize_${report.meta.user.replace(/ /g, '_')}.pdf`}
-                 className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold text-lg shadow-xl shadow-purple-500/40 hover:scale-105 transition-all"
-               >
-                 {({ loading }) => loading ? (
-                     <><Loader2 className="animate-spin" /> Generuojama...</>
-                   ) : (
-                     <><Download /> Atsisiųsti PDF Knygą</>
-                   )
-                 }
-               </PDFDownloadLink>
-             ) : (
-               <button disabled className="px-8 py-4 bg-white/5 rounded-xl text-white">Kraunama...</button>
-             )}
+             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center -mt-20">
+                <div className="bg-[#0f0f23] border border-amber-500/30 p-8 rounded-3xl shadow-2xl text-center max-w-md mx-4 w-full">
+                   <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg animate-bounce">
+                      <Lock className="text-white w-8 h-8" />
+                   </div>
+                   <h3 className="text-2xl font-heading font-bold text-white mb-2">
+                     {isGift ? "Atrakinti Pilną Dovaną" : "Atrakinti 2026 Prognozę"}
+                   </h3>
+                   <p className="text-slate-400 mb-6">
+                     Norėdami matyti ateities prognozes, karmos pamokas ir gauti PDF knygą, atrakinkite pilną ataskaitą.
+                   </p>
+                   
+                   <button 
+                      onClick={handlePayment}
+                      disabled={isLoadingPayment}
+                      className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all flex items-center justify-center gap-2"
+                   >
+                      {/* 2. NAUDOJAME KAINOS KINTAMĄJĲ */}
+                      {isLoadingPayment ? <Loader2 className="animate-spin"/> : `Atrakinti – ${PRICE}€`}
+                   </button>
+
+                   {/* --- NAUJA: PRADĖTI IŠ NAUJO MYGTUKAS PAYWALL SEKCIJOJE --- */}
+                   <button 
+                      onClick={handleReset}
+                      className="mt-4 text-sm text-slate-500 hover:text-white transition-colors flex items-center justify-center gap-2"
+                   >
+                      <RotateCcw size={14} />
+                      <span>Ne tas žmogus? Pradėti iš naujo</span>
+                   </button>
+                   {/* --------------------------------------------------------- */}
+                </div>
+             </div>
           </div>
-        </div>
+        ) : (
+          /* ATRAKINTA */
+          <div className="mt-12 pt-12 border-t border-dashed border-purple-500/30 animate-fade-in-up">
+             <div className="mb-10 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-200 text-center flex items-center justify-center gap-2">
+               <Sparkles className="w-5 h-5" />
+               <span>
+                 {isGift 
+                   ? "Dovana sėkmingai paruošta! Galite ją atsisiųsti." 
+                   : "Apmokėjimas sėkmingas! Visas turinys atrakintas."}
+               </span>
+             </div>
+             
+             {lockedSections.map(sec => renderSection(sec))}
+
+             {/* PDF DOWNLOAD SEKCIJA */}
+             <div className="mt-16 pt-12 border-t border-white/10 flex flex-col items-center text-center">
+                <h3 className="text-2xl font-heading font-bold text-white mb-4">
+                  {isGift 
+                    ? `Knyga skirta ${recipientName} – Paruošta` 
+                    : "Jūsų Asmeninė Knyga Paruošta"}
+                </h3>
+                <p className="text-slate-400 mb-8 max-w-md">
+                  {isGift 
+                    ? "Atsisiųskite PDF failą, atsispausdinkite arba nusiųskite jį tiesiogiai kaip dovaną." 
+                    : "Tai jūsų unikalus dokumentas. Išsisaugokite jį, nes duomenys naršyklėje saugomi laikinai."}
+                </p>
+                
+                {isClient ? (
+                  <div className="flex flex-col items-center gap-4 w-full">
+                    {/* DOWNLOAD MYGTUKAS */}
+                    <PDFDownloadLink
+                      document={<NumerologyReportPdf data={report} />}
+                      fileName={`LikimoKnyga_${report.meta.user.replace(/ /g, '_')}.pdf`}
+                      className="group flex items-center justify-center gap-3 px-8 py-4 bg-white/10 border border-white/20 text-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all w-full sm:w-auto"
+                    >
+                      {({ loading }) => loading ? (
+                          <><Loader2 className="animate-spin" /> Generuojama PDF...</>
+                        ) : (
+                          <><Download /> Atsisiųsti PDF Knygą</>
+                        )
+                      }
+                    </PDFDownloadLink>
+
+                    {/* --- NAUJA: PRADĖTI IŠ NAUJO MYGTUKAS --- */}
+                    <button 
+                      onClick={handleReset}
+                      className="flex items-center justify-center gap-2 px-6 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all text-sm w-full sm:w-auto mt-2"
+                    >
+                      <RotateCcw size={16} />
+                      <span>Kurti Naują Analizę</span>
+                    </button>
+                  </div>
+                ) : (
+                  <button disabled className="px-8 py-4 bg-white/5 rounded-xl text-white">Kraunama...</button>
+                )}
+             </div>
+          </div>
+        )}
 
       </div>
+      
+      <SuccessCelebration
+        isVisible={showSuccessPopup}
+        onClose={() => setShowSuccessPopup(false)}
+        isGift={isGift}
+        recipientName={recipientName}
+      />
     </div>
   );
 }

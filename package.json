@@ -11,6 +11,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@react-pdf/renderer": "^4.3.1",
+    "@stripe/stripe-js": "^8.6.0",
     "@tailwindcss/typography": "^0.5.19",
     "astronomy-engine": "^2.1.19",
     "clsx": "^2.1.1",
@@ -21,6 +22,7 @@
     "react-dom": "19.2.1",
     "react-markdown": "^10.1.0",
     "react-tsparticles": "^2.12.2",
+    "stripe": "^20.1.0",
     "tailwind-merge": "^3.4.0",
     "tsparticles-slim": "^2.12.0"
   },

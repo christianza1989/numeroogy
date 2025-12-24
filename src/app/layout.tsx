@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display, Roboto } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ 
   subsets: ["latin"], 
   variable: "--font-playfair" 
+});
+const roboto = Roboto({ 
+  subsets: ["latin"], 
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-roboto" 
 });
 
 export const metadata: Metadata = {
@@ -20,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="lt" className="scroll-smooth">
-      <body className={`${inter.variable} ${playfair.variable} font-sans bg-slate-950 text-slate-200 antialiased`}>
+      <body className={`${inter.variable} ${playfair.variable} ${roboto.variable} font-sans bg-slate-950 text-slate-200 antialiased`}>
         {children}
       </body>
     </html>
